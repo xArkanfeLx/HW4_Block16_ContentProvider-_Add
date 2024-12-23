@@ -1,17 +1,15 @@
 package com.example.contentprovider
 
-import android.Manifest
-import android.content.Intent
-import android.content.pm.PackageManager
+import android.app.Activity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.app.ActivityCompat
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
-class CustomAdapter(val activity: MainActivity,private val items: MutableList<MyContact>) :
+class CustomAdapter(val activity: Activity, private val items: MutableList<MyContact>) :
     RecyclerView.Adapter<CustomAdapter.ContactViewHolder>() {
 
     private var onItemClickListener: OnItemClickListener? = null
@@ -41,10 +39,16 @@ class CustomAdapter(val activity: MainActivity,private val items: MutableList<My
         holder.phoneTV.text = contact.phone
 
         holder.callIV.setOnClickListener{
-            activity.startCall(contact.phone)
+            when (activity) {
+                is MainActivity -> activity.startCall(contact.phone)
+                is ContactSearchActivity -> activity.startCall(contact.phone)
+            }
         }
         holder.smsIV.setOnClickListener{
-            activity.startSmsActivity(contact)
+            when (activity) {
+                is MainActivity -> activity.startSmsActivity(contact)
+                is ContactSearchActivity -> activity.startSmsActivity(contact)
+            }
         }
 
         /*holder.itemView.setOnClickListener {

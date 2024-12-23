@@ -2,15 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/exitMenuMain"
-        android:orderInCategory="50"
-        android:title="Выход"
-        android:icon="@drawable/exit_img"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/searchMenuMain"
-        android:orderInCategory="50"
-        android:title="Поиск"
-        android:icon="@drawable/search_img"
-        app:showAsAction="never"/>
+        android:id="@+id/overflowMenu"
+        android:icon="@drawable/menu_img"
+        android:title=""
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/search"
+                android:icon="@drawable/search_img"
+                android:title="Поиск"
+                />
+            <item
+                android:id="@+id/exit"
+                android:icon="@drawable/exit_img"
+                android:title="Выход"
+                />
+        </menu>
+    </item>
 </menu>

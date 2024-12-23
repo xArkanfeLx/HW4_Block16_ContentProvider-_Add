@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
-
+    tools:context=".ContactSearchActivity">
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarTB"
         android:layout_width="match_parent"
@@ -18,29 +17,19 @@
         app:title="Мои контакты" />
 
     <EditText
-        android:id="@+id/nameET"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Введите имя"
-        android:textAlignment="center"/>
-    <EditText
-        android:id="@+id/phoneET"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Введите телефон"
-        android:inputType="phone"
-        android:textAlignment="center"/>
-
-    <Button
-        android:id="@+id/addBTN"
+        android:id="@+id/searchET"
         android:layout_margin="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Добавить"
+        android:hint="Введите символы для поиска"
+        android:textAlignment="center"/>
+
+    <Button
+        android:id="@+id/searchBTN"
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Поиск"
         android:textAlignment="center"/>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -49,5 +38,4 @@
         android:layout_height="match_parent"
         android:layout_margin="10dp"
         tools:listitem="@layout/list_item" />
-
 </LinearLayout>

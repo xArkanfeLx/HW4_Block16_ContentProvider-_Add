@@ -13,8 +13,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.contentprovider.databinding.ActivityMainBinding
 import android.Manifest
+import android.content.ContentProviderOperation
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.provider.ContactsContract.CommonDataKinds.Phone
+import android.provider.ContactsContract.CommonDataKinds.StructuredName
+import android.provider.ContactsContract.RawContacts
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -47,6 +52,44 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.addBTN.setOnClickListener{
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                permissionContact.launch(Manifest.permission.WRITE_CONTACTS)
+            } else {
+                Toast.makeText(this@MainActivity,"Добавляем",Toast.LENGTH_SHORT).show()
+                addContact()
+            }
+        }
+    }
+
+    private fun addContact() {
+        val newContactName = binding.nameET.text.toString()
+        val newContactPhone = binding.phoneET.text.toString()
+        val listCPO = ArrayList<ContentProviderOperation>()
+
+        listCPO.add(ContentProviderOperation.newInsert(RawContacts.CONTENT_URI)
+            .withValue(RawContacts.ACCOUNT_TYPE,null)
+            .withValue(RawContacts.ACCOUNT_NAME,null).build())
+
+        listCPO.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+            .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID,0)
+            .withValue(ContactsContract.Data.MIMETYPE,StructuredName.CONTENT_ITEM_TYPE)
+            .withValue(StructuredName.DISPLAY_NAME,newContactName).build())
+        listCPO.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+            .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID,0)
+            .withValue(ContactsContract.Data.MIMETYPE,Phone.CONTENT_ITEM_TYPE)
+            .withValue(Phone.NUMBER,newContactPhone).withValue(Phone.TYPE,Phone.TYPE_MOBILE).build())
+
+        try {
+            contentResolver.applyBatch(ContactsContract.AUTHORITY,listCPO)
+            getContact()
+        } catch (e:Exception) {
+            Log.e("Exception ",e.message!!)
+        }
+    }
+
     @SuppressLint("Range")
     private fun getContact() {
         Toast.makeText(this@MainActivity,"Выводим контакты",Toast.LENGTH_SHORT).show()
@@ -61,6 +104,7 @@ class MainActivity : AppCompatActivity() {
         while (phones!!.moveToNext()) {
             val name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
             val phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+            if(contactList!!.isNotEmpty() && contactList!!.last().name == name) continue
             contactList?.add(MyContact(name, phoneNumber))
         }
         phones.close()
@@ -78,7 +122,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initAdapter(contacts: MutableList<MyContact>) {
-        val adapter = CustomAdapter(this@MainActivity,contacts)
+        val adapter = CustomAdapter(this,contacts)
         binding.recyclerRV.adapter = adapter
         binding.recyclerRV.setHasFixedSize(true)
         /*adapter.setOnItemClickListener(object :
@@ -122,13 +166,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val permissionWriteContact = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            Toast.makeText(this@MainActivity, "Разрешено -> запись", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this@MainActivity, "Отказано -> запись", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        finish()
+        when (item.itemId) {
+            R.id.exit -> finishAffinity()
+            R.id.search -> startSearchIntent()
+        }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun startSearchIntent() {
+        startActivity(Intent(this@MainActivity,ContactSearchActivity()::class.java))
     }
 }
