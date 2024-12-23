@@ -4,13 +4,7 @@
     <item
         android:id="@+id/exitMenuMain"
         android:orderInCategory="50"
-        android:title="Выход"
-        android:icon="@drawable/exit_img"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/searchMenuMain"
-        android:orderInCategory="50"
-        android:title="Поиск"
-        android:icon="@drawable/search_img"
+        android:title="Назад"
+        android:icon="@drawable/back_img"
         app:showAsAction="never"/>
 </menu>
